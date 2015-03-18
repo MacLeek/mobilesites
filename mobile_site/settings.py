@@ -20,11 +20,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = ')^us5k6a#iz40atdvow!*-iy$**g^puomt+1f-y5c9rv-ua5z_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['119.176.60.6']
 
 
 # Application definition
@@ -61,8 +61,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'mobilesites',
-        'USER': 'root',
-        'PASSWORD': '',
+        'USER': 'mobilesite',
+        'PASSWORD': 'mobilesite888',
         'HOST': '127.0.0.1',
         'PORT': '',
     }
@@ -84,7 +84,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
-
+STATIC_ROOT = 'D:\\mobile_site\\static\\'
 STATIC_URL = '/static/'
 
 # Additional locations of static files
