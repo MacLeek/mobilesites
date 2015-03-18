@@ -86,13 +86,6 @@
             if (secondUrl) {
                 $('#ifrContent').empty();
                 $('#ifrContent').attr('src', "/page?url=" + secondUrl);
-                //$('#ifrContent').load(function() {
-                //    var ifrContent = $('#ifrContent').contents();
-                //    var tmp = ifrContent.find("head");
-                //    $('<script>')
-                //        .attr('src', "http://127.0.0.1:8000/static/js/inspector.js")
-                //        .appendTo(tmp);
-                //});
                 var contentModal = $('#contentModal');
                 contentModal.modal({
                     keyboard: false
@@ -106,14 +99,14 @@
             var ifrContent = $('#ifrContent').contents();
             var tmp = ifrContent.find("head");
             $('<script>')
-                .attr('src', "http://127.0.0.1:8000/static/js/inspector.js")
+                .attr('src', "http://119.176.60.6:8000/static/js/inspector.js")
                 .appendTo(tmp);
         });
         $('#ifrNav').load(function() {
             var ifrNav = $('#ifrNav').contents();
             var tmp = ifrNav.find("head");
             $('<script>')
-                .attr('src', "http://127.0.0.1:8000/static/js/inspector.js")
+                .attr('src', "http://119.176.60.6:8000/static/js/inspector.js")
                 .appendTo(tmp);
         });
         $("#emptyNav").on("click", function() {
