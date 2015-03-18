@@ -1,0 +1,42 @@
+{% extends "mob_base.html" %}
+{% block content %}
+    <div id="slider">
+        {% for img in imglist %}
+            <div>
+                <img src="{{ img.url }}">
+            </div>
+        {% endfor %}
+    </div>
+{##}
+{#    <div id="slider">#}
+{##}
+{#    <div><img src="http://yinbaotyre.com/resource/h000/h70/img201403252100130.jpg"></div><div><img src="http://yinbaotyre.com/resource/h000/h70/img201403252100130.jpg"></div></div>#}
+
+<ul class="mainmenu">
+    {% for n in nav %}
+        <li id="nav_1_{{ forloop.counter0 }}">
+            <a href={{ n.url }}>
+                <em></em>
+
+                <p><span>{{ n.name }}</span></p><b></b>
+            </a>
+        </li>
+    {% endfor %}
+</ul>
+
+<script>
+   $(document).ready(function() {
+       //页面上方滑动图片
+       $("#slider").excoloSlider({
+           autoPlay: true,
+           interval: 5000,
+           autoSize: true,
+           repeat: true,
+            width: 640,
+            height: 452,
+           mouseNav: false,
+           prevnextNav: false
+       });
+   });
+</script>
+{% endblock %}

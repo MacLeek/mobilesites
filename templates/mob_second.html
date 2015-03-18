@@ -1,0 +1,20 @@
+{% extends "mob_base.html" %}
+{% block content %}
+    <div style="word-break: break-all;padding: 7px">
+    {% if second_navs %}
+        <div data-role="header">
+            <div data-role="navbar">
+                <ul>
+                    {% for nav in second_navs %}
+                    <li><a href="{{ nav.url }}">{{ nav.name }}</a></li>
+                    {% endfor %}
+                    {% for nav in extra_navs %}
+                    <li style="display:none"></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+        <div id="secondContent">{{ contents|safe }}</div>
+    </div>
+{% endblock %}
