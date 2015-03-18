@@ -53,9 +53,13 @@ var ifrdocument = document.getElementById(currentIfr).contentDocument;
         // Remove outline from element:
         e.target.style.outline = '';
     }
-    function getLocation(href) {
+    function getLocation(href, full) {
+        var full = typeof full !== 'undefined' ? full : false;
         var l = document.createElement("a");
         l.href = href;
+        if (full){
+            return l.href;
+        }
         if (l.pathname == '/') {
             return href;
         } else {
@@ -134,6 +138,7 @@ var ifrdocument = document.getElementById(currentIfr).contentDocument;
             var ifr = $('#ifr').contents();
             var target = $(e.target);
             var currentSecondNav = $("#currentSecondNav").val();
+            console.log(currentSecondNav);
             var pos = $("#nav_1_"+currentSecondNav).parent();
             if (target.is("a")) {
                 var navUrl = target[0].pathname;
@@ -173,7 +178,7 @@ var ifrdocument = document.getElementById(currentIfr).contentDocument;
             var imgUrl;
             if (target.is('img')){
                 var imgPos = ifr.find("#slider");
-                imgUrl = target.attr('src');
+                imgUrl = getLocation(target.attr('src'), true);
                 imgPos.append('<div><img src="'+ imgUrl +'"></div>');
                 //ifr.find("#slider").excoloSlider({
                 //    autoPlay: true,
@@ -190,7 +195,7 @@ var ifrdocument = document.getElementById(currentIfr).contentDocument;
                 if (imgs.length > 0) {
                     imgs.each(function() {
                         var imgPos = ifr.find("#slider");
-                        imgUrl = $(this).attr('src');
+                        imgUrl = getLocation($(this).attr('src'), true);
                         imgPos.append('<div><img src="'+ imgUrl +'"></div>');
                         //ifr.excoloSlider({
                         //    autoPlay: true,

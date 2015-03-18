@@ -61,7 +61,12 @@ def get_top_domain(url):
     :param url:
     :return:
     """
-    return '.'.join(urlparse(url).netloc.split('.')[-2:])
+    netloc = urlparse(url).netloc
+    if netloc:
+        res = '.'.join(netloc.split('.')[-2:])
+    else:
+        res = '.'.join(url.split('.')[-2:])
+    return res.split(':')[0]
 
 
 @csrf_exempt
@@ -393,9 +398,11 @@ def test(request):
     :return:
     """
     url_path = request.META['PATH_INFO']
+    host = request.META['HTTP_HOST']
     # 需传入点击时的element的文字内容
     title = request.GET.get('title', None)
-    domain_name = 'yinbaotyre.com'
+    domain_name = 'qxl-china.cn'
+    # domain_name = get_top_domain(host)
     site_set = Site.objects.filter(domain_name=domain_name)
     if site_set.exists():
         s = site_set[0]
