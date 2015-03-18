@@ -254,46 +254,48 @@ def mob_index(request):
     if level == 1:
         top_domain = get_top_domain(url)
         site_set = Site.objects.filter(domain_name=top_domain)
+        nav_list = []
+        imglist = []
         if site_set.exists():
             s = site_set[0]
+            imglist = s.sliders.all()
             nav_list = NavBlock.objects.filter(site__domain_name=get_top_domain(url), father_id=0)
-            c = {
-                'nav': nav_list,
-                'imglist': [],
-                'imglist': s.sliders.all()
-            }
-            return render(request, 'mob_index.html', c)
-        r = requests.get(url)
-        soup = BeautifulSoup(r.content, "lxml")
-        nav_uls = soup.find_all("ul")
-        nav_list = []
-        a_exist = True
-        for ul in nav_uls:
-            if type(ul) != NavigableString:
-                for li in ul.contents:
-                    if type(li) != NavigableString and a_exist:
-                        try:
-                            text = li.a.get_text()
-                            if not text:
-                                text = li.get_text()
-                            nav_list.append({'name': text, 'url': li.a.get('href')})
-                        except:
-                            nav_list = []
-                            a_exist = False
-                            break
-                if a_exist:
-                    break
-                a_exist = True
-        imglist = []
-        taglist = []
-        pointer = -1
-        soup = soup.find("body")
-        reverse(soup, imglist, taglist, pointer, url)
         c = {
             'nav': nav_list,
             'imglist': imglist
         }
         return render(request, 'mob_index.html', c)
+##        r = requests.get(url)
+##        soup = BeautifulSoup(r.content, "lxml")
+##        nav_uls = soup.find_all("ul")
+##        nav_list = []
+##        a_exist = True
+##        for ul in nav_uls:
+##            if type(ul) != NavigableString:
+##                for li in ul.contents:
+##                    if type(li) != NavigableString and a_exist:
+##                        try:
+##                            text = li.a.get_text()
+##                            if not text:
+##                                text = li.get_text()
+##                            nav_list.append({'name': text, 'url': li.a.get('href')})
+##                        except:
+##                            nav_list = []
+##                            a_exist = False
+##                            break
+##                if a_exist:
+##                    break
+##                a_exist = True
+##        imglist = []
+##        taglist = []
+##        pointer = -1
+##        soup = soup.find("body")
+##        reverse(soup, imglist, taglist, pointer, url)
+##        c = {
+##            'nav': nav_list,
+##            'imglist': imglist
+##        }
+##        return render(request, 'mob_index.html', c)
     # 如果是二级页面
     else:
         return render(request, 'mob_second.html')
