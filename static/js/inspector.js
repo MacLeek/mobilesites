@@ -4,6 +4,7 @@
  */
 //获取当前使用的iframe document
 var currentIfr = document.getElementById("currentIfr").value;
+console.log(currentIfr);
 var ifrdocument = document.getElementById(currentIfr).contentDocument;
 (function(document) {
     var last;
@@ -83,9 +84,10 @@ var ifrdocument = document.getElementById(currentIfr).contentDocument;
                 var navUrl = target[0].pathname;
                 var navName = target.text();
                 if (navUrl && navName) {
+                    var numOfNavs = nav.find('li').length;
                     var toAppend = '<li><a href="' + navUrl + '"><em></em><p><span>' + navName + '</span></p><b></b></a></li>';
                     nav.append(toAppend);
-                    var numOfNavs = nav.find('li').length;
+                    console.log(numOfNavs);
                     var navBlock = '<div class="form-inline"><div style="float: left;">一级</div><input type="text" class="form-control" value="' +
                         navName + '" name="navNameO"> ' +
                         '<input type="text" class="form-control" value="' + navUrl + '" name="navUrlO">' +
@@ -101,9 +103,9 @@ var ifrdocument = document.getElementById(currentIfr).contentDocument;
                         var navUrl = $(this).attr("href");
                         var navName = $(this).text();
                         if (navUrl && navName) {
+                            var numOfNavs = nav.find('li').length;
                             var toAppend = '<li><a href="' + navUrl + '"><em></em><p><span>' + navName + '</span></p><b></b></a></li>';
                             nav.append(toAppend);
-                            var numOfNavs = nav.find('li').length;
                             var navBlock = '<div class="form-inline"><div style="float: left;">一级</div><input type="text" class="form-control" value="' +
                                 navName + '" name="navNameO"> ' +
                                 '<input type="text" class="form-control" value="' + navUrl + '" name="navUrlO">' +
@@ -130,7 +132,7 @@ var ifrdocument = document.getElementById(currentIfr).contentDocument;
                 .done(function(msg) {
                     var secondContent = ifr.find("#secondContent");
                     secondContent.append(msg);
-                    secondContent.enhanceWithin();
+                    //secondContent.enhanceWithin();
                 });
         //如果抓取二级导航项
         } else if ( currentIfr == "ifrSecondNav" ) {
@@ -138,8 +140,7 @@ var ifrdocument = document.getElementById(currentIfr).contentDocument;
             var ifr = $('#ifr').contents();
             var target = $(e.target);
             var currentSecondNav = $("#currentSecondNav").val();
-            console.log(currentSecondNav);
-            var pos = $("#nav_1_"+currentSecondNav).parent();
+            var pos = $("#"+currentSecondNav).parent();
             if (target.is("a")) {
                 var navUrl = target[0].pathname;
                 var navName = target.text();
@@ -180,16 +181,8 @@ var ifrdocument = document.getElementById(currentIfr).contentDocument;
                 var imgPos = ifr.find("#slider");
                 imgUrl = getLocation(target.attr('src'), true);
                 imgPos.append('<div><img src="'+ imgUrl +'"></div>');
-                //ifr.find("#slider").excoloSlider({
-                //    autoPlay: true,
-                //    interval: 5000,
-                //    autoSize: true,
-                //    repeat: true,
-                //    width: 640,
-                //    height: 452,
-                //    mouseNav: false,
-                //    prevnextNav: false
-                //});
+                var toAppend = '<div class="form-inline"><input data-role="none" type="text" class="form-control" value="'+imgUrl+'" name="url"></div><br>';
+                $("#slider").append(toAppend);
             } else {
                 var imgs = target.find('img');
                 if (imgs.length > 0) {
@@ -197,27 +190,13 @@ var ifrdocument = document.getElementById(currentIfr).contentDocument;
                         var imgPos = ifr.find("#slider");
                         imgUrl = getLocation($(this).attr('src'), true);
                         imgPos.append('<div><img src="'+ imgUrl +'"></div>');
-                        //ifr.excoloSlider({
-                        //    autoPlay: true,
-                        //    interval: 5000,
-                        //    autoSize: true,
-                        //    repeat: true,
-                        //    width: 640,
-                        //    height: 452,
-                        //    mouseNav: false,
-                        //    prevnextNav: false
-                        //});
+                        var toAppend = '<div class="form-inline"><input data-role="none" type="text" class="form-control" value="'+imgUrl+'" name="url"></div><br>';
+                        $("#slider").append(toAppend);
                     });
+                } else {
+                    alert('图片获取失败!');
                 }
             }
-            $.ajax({
-                method: "post",
-                url: "/save",
-                data: {'url': $("#siteUrl").val(), 'type': 'imgs', 'imgUrl': imgUrl}
-            })
-                .done(function() {
-                    alert("保存成功");
-                });
         }
         //
         //// These are the default actions (the XPath code might be a bit janky)

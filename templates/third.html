@@ -1,0 +1,33 @@
+{% extends "index_base.html" %}
+{% block phone_frame %}
+    <iframe id="ifr" src="/mobile?level=2&url={{ SITE_URL }}" frameborder="0" style="background-color: #fff;">
+    </iframe>
+{% endblock %}
+{% block content %}
+    <br>
+    <div class="form-inline">
+    当前css路径：   <input type="text" class="form-control" value="{{ css_path }}" name="cssPath" id="cssPath" placeholder="暂未添加css">
+    <button id="saveCss" class="btn btn-primary">更新</button>
+    </div>
+    <br>
+    <div class="form-inline">
+        <input type="text" class="form-control" value="" name="secondUrl" id="secondUrl" placeholder="请输入二级页面url">
+        <button id="findContent" class="btn btn-primary">提取二级页面显示区</button>
+        <button id="refreshContent" class="btn btn-primary">刷新</button>
+    </div>
+    <input type="hidden" id="currentIfr" value="ifrContent">
+    <input type="hidden" id="siteUrl" value="{{ SITE_URL }}">
+    <input type="hidden" id="hostIp" value="{{ HOST_IP }}">
+
+    <div class="modal fade" id="contentModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <iframe id="ifrContent" src="" frameborder="0"
+                        onload="this.width=900;this.height=screen.height;"></iframe>
+            </div>
+        </div>
+    </div>
+
+    </div>
+{% endblock %}

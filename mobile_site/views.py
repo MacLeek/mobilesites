@@ -38,15 +38,17 @@ def index(request):
     :return:
     """
     url = request.GET.get("url", None)
-    if url:
-        top_domain = get_top_domain(url)
-        site_set = Site.objects.filter(domain_name=top_domain)
-        c = {
+    step = request.GET.get("step", 1)
+    if not url:
+        return HttpResponse(status=404)
+    top_domain = get_top_domain(url)
+    site_set = Site.objects.filter(domain_name=top_domain)
+    c = {
                 "SITE_URL": url,
                 "HOST_IP": settings.HOST_IP
-        }
+    }
+    if step == '1':
         if site_set.exists():
-            site = site_set[0]
             nav_list = NavBlock.objects.filter(site__domain_name=top_domain, father_id=0)
             navs = OrderedDict()
             for nav in nav_list:
@@ -54,6 +56,24 @@ def index(request):
                 navs[nav.name] = (nav.url, second_nav_set)
             c.update(navs=navs.iteritems())
         return render(request, 'index.html', c)
+    elif step == '2':
+        if site_set.exists():
+            site = site_set[0]
+            imglist = site.sliders.all()
+        else:
+            imglist = []
+        c.update(imglist=imglist)
+        return render(request, 'second.html', c)
+    elif step == '3':
+        if site_set.exists():
+            site = site_set[0]
+            css_path = site.second.css_path if site.second else ''
+        else:
+            css_path = ''
+        c.update(css_path=css_path)
+        return render(request, 'third.html', c)
+    elif step == '4':
+        return render(request, 'fourth.html', c)
     return HttpResponse(status=404)
 
 
@@ -93,41 +113,70 @@ def save(request):
                     s.nav_first.clear()
                 else:
                     s = Site()
-                s.domain_name = domain_name
+                s.domain_name = domain_name.strip()
                 s.save()
                 for nav in navs:
-                    n = NavBlock()
-                    n.father_id = 0
-                    n.name = nav['name']
-                    n.url = nav['url']
-                    n.save()
-                    for second in nav['secondNavs']:
-                        sn = NavBlock()
-                        sn.father_id = n.id
-                        sn.name = second['name']
-                        sn.url = second['url']
-                        sn.save()
-                        # 添加二级nav
-                        s.nav_first.add(sn)
-                    # 添加一级nav
-                    s.nav_first.add(n)
+                    if nav['name'].strip() and nav['url'].strip():
+                        n = NavBlock()
+                        n.father_id = 0
+                        n.name = nav['name'].strip()
+                        n.url = nav['url'].strip()
+                        n.save()
+                        for second in nav['secondNavs']:
+                            sn = NavBlock()
+                            sn.father_id = n.id
+                            sn.name = second['name'].strip()
+                            sn.url = second['url'].strip()
+                            sn.save()
+                            # 添加二级nav
+                            s.nav_first.add(sn)
+                        # 添加一级nav
+                        s.nav_first.add(n)
                 return HttpResponse(status=200)
         # 如果抓取图片
         elif kind == 'imgs':
-            img_url = request.POST.get('imgUrl', None)
+            url_str = request.POST.get('imgUrl', None)
+            img_urls = json.loads(url_str, 'utf-8')
             domain_name = get_top_domain(url)
+            site_set = Site.objects.filter(domain_name=domain_name)
+            if site_set.exists():
+                s = site_set[0]
+                if s.sliders:
+                    s.sliders.clear()
+            else:
+                s = Site()
+                s.domain_name = domain_name.strip()
+                s.save()
+            for url in img_urls:
+                if url.strip():
+                    slider = Slider()
+                    slider.url = url.strip()
+                    slider.save()
+                    s.sliders.add(slider)
+            return HttpResponse(status=200)
+        elif kind == 'css':
+            domain_name = get_top_domain(url)
+            css_path = request.POST.get('cssPath', None)
             site_set = Site.objects.filter(domain_name=domain_name)
             if site_set.exists():
                 s = site_set[0]
             else:
                 s = Site()
-                s.domain_name = domain_name
-                s.save()
-            slider = Slider()
-            slider.url = img_url
-            slider.save()
-            s.sliders.add(slider)
+            s.domain_name = domain_name
+            # 保存二级页面的主要显示区域的css
+            if css_path.strip():
+                if not s.second:
+                    second = SecondModifications()
+                    second.css_path = css_path.strip()
+                    second.save()
+                    s.second = second
+                else:
+                    second = s.second
+                    second.css_path = css_path.strip()
+                    second.save()
+            s.save()
             return HttpResponse(status=200)
+
     elif request.method == "DELETE":
         request_delete = QueryDict(request.body)
         kind = request_delete.get('type', 'imgs')
@@ -208,16 +257,17 @@ def purify_html(request):
         s = Site()
     s.domain_name = domain_name
     # 保存二级页面的主要显示区域的css
-    if not s.second:
-        second = SecondModifications()
-        second.css_path = css_path
-        second.save()
-        s.second = second
-        s.save()
-    else:
-        second = s.second
-        second.css_path = css_path
-        second.save()
+    if css_path.strip():
+        if not s.second:
+            second = SecondModifications()
+            second.css_path = css_path.strip()
+            second.save()
+            s.second = second
+        else:
+            second = s.second
+            second.css_path = css_path.strip()
+            second.save()
+    s.save()
     res = purify(html, base_url)
     if not res:
         return HttpResponse(status=404)
@@ -249,13 +299,13 @@ def mob_index(request):
     :return:
     """
     url = request.GET.get("url", None)
-    level = request.GET.get("level", 1)
+    level = int(request.GET.get("level", 1))
     if not url:
         return HttpResponse(status=404)
+    top_domain = get_top_domain(url)
+    site_set = Site.objects.filter(domain_name=top_domain)
     # 如果是首页
     if level == 1:
-        top_domain = get_top_domain(url)
-        site_set = Site.objects.filter(domain_name=top_domain)
         nav_list = []
         imglist = []
         if site_set.exists():
@@ -300,7 +350,23 @@ def mob_index(request):
 ##        return render(request, 'mob_index.html', c)
     # 如果是二级页面
     else:
-        return render(request, 'mob_second.html')
+        c = {}
+        if site_set.exists():
+            s = site_set[0]
+            r = requests.get(url)
+            # 这里有用到soup是因为网页的编码问题,用了其他的监测编码的库似乎不太好用,暂时用bs的
+            soup = BeautifulSoup(r.content)
+            tree = lxml.html.fromstring(str(soup))
+            sel = CSSSelector(s.second.css_path)
+            res = sel(tree)
+            if res:
+                html = lxml.html.tostring(res[0])
+                base_url = 'http://www.%s' % top_domain
+                contents = purify(html, base_url)
+                c = {
+                    "contents": contents,
+                }
+        return render(request, 'mob_second.html', c)
 
 
 def getsizes(uri):
@@ -405,7 +471,7 @@ def test(request):
     host = request.META['HTTP_HOST']
     # 需传入点击时的element的文字内容
     title = request.GET.get('title', None)
-    domain_name = 'qxl-china.cn'
+    domain_name = 'weifangsteel.com'
     # domain_name = get_top_domain(host)
     site_set = Site.objects.filter(domain_name=domain_name)
     if site_set.exists():
@@ -440,14 +506,14 @@ def test(request):
             tree = lxml.html.fromstring(str(soup))
             sel = CSSSelector(s.second.css_path)
             res = sel(tree)
+            c = {
+                "title": title,
+                "second_navs": second_navs,
+                "extra_navs": extra_navs
+            }
             if res:
                 html = lxml.html.tostring(res[0])
                 contents = purify(html, base_url)
-                c = {
-                    "title": title,
-                    "contents": contents,
-                    "second_navs": second_navs,
-                    "extra_navs": extra_navs
-                }
-                return render(request, 'mob_second.html', c)
+                c.update(contents=contents)
+            return render(request, 'mob_second.html', c)
     return HttpResponse(status=404)

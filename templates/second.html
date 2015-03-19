@@ -1,0 +1,42 @@
+{% extends "index_base.html" %}
+{% block phone_frame %}
+    <iframe id="ifr" src="/mobile?url={{ SITE_URL }}" frameborder="0" style="background-color: #fff;">
+    </iframe>
+{% endblock %}
+{% block content %}
+    <br>
+    <div id="slider">
+    {% for img in imglist %}
+        <div class="form-inline">
+            <input data-role="none" type="text" class="form-control" value="{{ img.url }}" name="url">
+        </div>
+        <br>
+    {% endfor %}
+    </div>
+    <div class="form-inline">
+        <button id="findLogo" class="btn btn-primary">提取logo</button>
+        <button id="findSlider" class="btn btn-primary">提取slider图片</button>
+        <button id="emptySlider" class="btn btn-primary">清除所有slider</button>
+    </div>
+    <br>
+    <div class="form-inline">
+        <input type="text" data-role="none" class="form-control" name="imgUrl" id="imgUrl" placeholder="请输入图片url">
+        <button id="addSlider" class="btn btn-primary">添加</button>
+    </div>
+    <br>
+    <button id="saveSlider" class="btn btn-primary">保存全部</button>
+    <input type="hidden" id="currentIfr" value="ifrSlider">
+    <input type="hidden" id="siteUrl" value="{{ SITE_URL }}">
+    <input type="hidden" id="hostIp" value="{{ HOST_IP }}">
+
+    <div class="modal fade" id="sliderModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <iframe id="ifrSlider" src="/page?level=2&url={{ SITE_URL }}" frameborder="0"
+                        onload="this.width=900;this.height=screen.height;"></iframe>
+            </div>
+        </div>
+    </div>
+    </div>
+{% endblock %}
