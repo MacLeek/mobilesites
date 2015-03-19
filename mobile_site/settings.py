@@ -10,6 +10,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+from re import search
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -95,3 +96,24 @@ STATICFILES_DIRS = (
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR,  'templates'),
 )
+
+HOST_IP = 'http://119.176.60.6:8000'
+
+try:
+    import local_settings
+except ImportError:
+    pass
+else:
+    # Import any symbols that begin with A-Z. Append to lists any symbols that
+    # begin with "EXTRA_".
+    for attr in dir(local_settings):
+        match = search('^EXTRA_(\w+)', attr)
+        if match:
+            name = match.group(1)
+            value = getattr(local_settings, attr)
+            try:
+                globals()[name] += value
+            except KeyError:
+                globals()[name] = value
+        elif search('^[A-Z]', attr):
+            globals()[attr] = getattr(local_settings, attr)

@@ -99,14 +99,14 @@
             var ifrContent = $('#ifrContent').contents();
             var tmp = ifrContent.find("head");
             $('<script>')
-                .attr('src', "http://119.176.60.6:8000/static/js/inspector.js")
+                .attr('src', $("#hostIp").val()+"/static/js/inspector.js")
                 .appendTo(tmp);
         });
         $('#ifrNav').load(function() {
             var ifrNav = $('#ifrNav').contents();
             var tmp = ifrNav.find("head");
             $('<script>')
-                .attr('src', "http://119.176.60.6:8000/static/js/inspector.js")
+                .attr('src', $("#hostIp").val()+"/static/js/inspector.js")
                 .appendTo(tmp);
         });
         $("#emptyNav").on("click", function() {

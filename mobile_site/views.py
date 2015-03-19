@@ -16,6 +16,7 @@ from collections import OrderedDict
 from django.http import HttpResponse, QueryDict
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
+from django.conf import settings
 
 from models import NavBlock, Site, SecondModifications, Slider
 
@@ -41,7 +42,8 @@ def index(request):
         top_domain = get_top_domain(url)
         site_set = Site.objects.filter(domain_name=top_domain)
         c = {
-                "SITE_URL": url
+                "SITE_URL": url,
+                "HOST_IP": settings.HOST_IP
         }
         if site_set.exists():
             site = site_set[0]
