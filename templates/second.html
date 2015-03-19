@@ -1,7 +1,10 @@
 {% extends "index_base.html" %}
 {% block phone_frame %}
+    <div id="iphone_5_emulator">
+        <div id="frame_iphone_5_emulator" class="frame_scroller">
     <iframe id="ifr" src="/mobile?url={{ SITE_URL }}" frameborder="0" style="background-color: #fff;">
     </iframe>
+    </div></div>
 {% endblock %}
 {% block content %}
     <br>

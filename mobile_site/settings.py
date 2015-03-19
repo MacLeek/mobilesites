@@ -97,6 +97,8 @@ TEMPLATE_DIRS = (
     os.path.join(BASE_DIR,  'templates'),
 )
 
+LOGIN_URL = '/login'
+
 HOST_IP = 'http://119.176.60.6:8000'
 
 try:

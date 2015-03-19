@@ -220,5 +220,44 @@
                     alert("保存成功");
                 });
         });
+        $("#addNewsite").on('click', function() {
+            var newSiteurl = $("#newSiteurl").val();
+            window.location.href = "/index?step=1&url=" + newSiteurl;
+        });
+        $(".enableSite").each(function() {
+            $(this).on('click', function() {
+                var id = $(this).attr('siteId');
+                var that = $(this);
+                $.ajax({
+                    method: "post",
+                    url: "/save",
+                    data: {'type': 'status', 'id': id}
+                })
+                    .done(function() {
+                        if(that.attr('data-title') == '启用'){
+                            that.attr('class', 'btn btn-success btn-xs');
+                            that.attr('data-title', '禁用');
+                            that.text('已启用');
+                        } else {
+                            that.attr('class', 'btn btn-warning btn-xs');
+                            that.attr('data-title', '启用');
+                            that.text('已禁用');
+                        }
+                    });
+            });
+        });
+        $("#mytable #checkall").click(function() {
+            if ($("#mytable #checkall").is(':checked')) {
+                $("#mytable input[type=checkbox]").each(function() {
+                    $(this).prop("checked", true);
+                });
+
+            } else {
+                $("#mytable input[type=checkbox]").each(function() {
+                    $(this).prop("checked", false);
+                });
+            }
+        });
+        $("[data-toggle=tooltip]").tooltip();
     });
 })();

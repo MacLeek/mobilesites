@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import requests
-from bs4 import BeautifulSoup, NavigableString
+from bs4 import BeautifulSoup
 import urllib
 from PIL import ImageFile
 import json
@@ -15,8 +15,10 @@ from collections import OrderedDict
 
 from django.http import HttpResponse, QueryDict
 from django.views.decorators.csrf import csrf_exempt
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.conf import settings
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 
 from models import NavBlock, Site, SecondModifications, Slider
 
@@ -28,9 +30,38 @@ ALLOWED_TAGS = ["img", "div", "span", "p", "br", "pre", "table", "tbody", "thead
                 "script", "embed", "h1", "h2"]
 ALLOWED_ATTRIBUTES = {'img': ['src', 'alt', 'width', 'height'], 'a': ['href'], 'input': ['type', 'id', 'name', 'value',
                       'onclick'], 'form': ['action', 'method', 'name', 'id'], 'option': ['value'], 'select': ['name'],
-                      'iframe': ['src'], '*': ['bgcolor', 'class', 'id', 'onclick'], 'script': ['language', 'type'], 'embed': ['src', 'pluginspage', 'type', 'quality']}
+                      'iframe': ['src'], '*': ['bgcolor', 'class', 'id', 'onclick'], 'script': ['language', 'type'],
+                      'embed': ['src', 'pluginspage', 'type', 'quality']}
 
 
+def login_view(request):
+    c = {}
+    return render(request, 'login.html', c)
+
+
+@login_required
+def logout_view(request):
+    logout(request)
+    return redirect('/login')
+
+
+def login_action(request):
+    username = request.POST.get('username', None)
+    password = request.POST.get('password', None)
+    if username and password:
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            if user.is_active:
+                login(request, user)
+                return redirect('/index')
+    err_msg = '用户名密码错误'
+    c = {
+        'error': err_msg
+    }
+    return render(request, 'login.html', c)
+
+
+@login_required
 def index(request):
     """
     项目首页
@@ -38,16 +69,23 @@ def index(request):
     :return:
     """
     url = request.GET.get("url", None)
-    step = request.GET.get("step", 1)
-    if not url:
+    step = request.GET.get("step", '0')
+    if not url and step != '0':
         return HttpResponse(status=404)
-    top_domain = get_top_domain(url)
-    site_set = Site.objects.filter(domain_name=top_domain)
-    c = {
-                "SITE_URL": url,
-                "HOST_IP": settings.HOST_IP
-    }
-    if step == '1':
+    if url:
+        top_domain = get_top_domain(url)
+        site_set = Site.objects.filter(domain_name=top_domain)
+        c = {
+            "SITE_URL": url,
+            "HOST_IP": settings.HOST_IP
+        }
+    if step == '0':
+        sites = Site.objects.all()
+        c = {
+            'sites': sites
+        }
+        return render(request, 'index.html', c)
+    elif step == '1':
         if site_set.exists():
             nav_list = NavBlock.objects.filter(site__domain_name=top_domain, father_id=0)
             navs = OrderedDict()
@@ -55,7 +93,7 @@ def index(request):
                 second_nav_set = NavBlock.objects.filter(site__domain_name=top_domain, father_id=nav.id).exclude(father_id=0)
                 navs[nav.name] = (nav.url, second_nav_set)
             c.update(navs=navs.iteritems())
-        return render(request, 'index.html', c)
+        return render(request, 'first.html', c)
     elif step == '2':
         if site_set.exists():
             site = site_set[0]
@@ -91,6 +129,7 @@ def get_top_domain(url):
     return res.split(':')[0]
 
 
+@login_required
 @csrf_exempt
 def save(request):
     """
@@ -176,7 +215,15 @@ def save(request):
                     second.save()
             s.save()
             return HttpResponse(status=200)
-
+        elif kind == 'status':
+            uid = request.POST.get('id', None)
+            if uid:
+                site_set = Site.objects.filter(id=uid)
+                if site_set.exists():
+                    site = site_set[0]
+                    site.is_active = not site.is_active
+                    site.save()
+                    return HttpResponse(status=200)
     elif request.method == "DELETE":
         request_delete = QueryDict(request.body)
         kind = request_delete.get('type', 'imgs')
@@ -239,6 +286,7 @@ def purify(html, base_url):
     return str(soup)
 
 
+@login_required
 def purify_html(request):
     """
     过滤掉多余css,修正图片一些属性,替换超链接
@@ -274,6 +322,7 @@ def purify_html(request):
     return HttpResponse(res)
 
 
+@login_required
 def page(request):
     """
     获取指定网址的内容并显示
@@ -291,6 +340,7 @@ def page(request):
         return HttpResponse(status=404)
 
 
+@login_required
 def mob_index(request):
     """
     手机模拟器现实的内容
