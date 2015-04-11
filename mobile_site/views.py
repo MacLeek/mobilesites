@@ -77,6 +77,7 @@ def index(request):
         site_set = Site.objects.filter(domain_name=top_domain)
         c = {
             "SITE_URL": url,
+            "HOST_IP": settings.HOST_IP
         }
     if step == '0':
         sites = Site.objects.all()

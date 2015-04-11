@@ -64,7 +64,7 @@ if VCAP_SERVICES:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': VCAP_SERVICES['mysql'][0]['credentials']['name'],
+            'NAME': 'test',
             'USER': VCAP_SERVICES['mysql'][0]['credentials']['username'],
             'PASSWORD': VCAP_SERVICES['mysql'][0]['credentials']['password'],
             'HOST': VCAP_SERVICES['mysql'][0]['credentials']['hostname'],
@@ -112,3 +112,5 @@ TEMPLATE_DIRS = (
 )
 
 LOGIN_URL = '/login'
+
+HOST_IP = env('HOST', 'http://127.0.0.1:8000')
