@@ -64,7 +64,7 @@ if VCAP_SERVICES:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'test',
+            'NAME': VCAP_SERVICES['mysql'][0]['credentials']['name'],
             'USER': VCAP_SERVICES['mysql'][0]['credentials']['username'],
             'PASSWORD': VCAP_SERVICES['mysql'][0]['credentials']['password'],
             'HOST': VCAP_SERVICES['mysql'][0]['credentials']['hostname'],
