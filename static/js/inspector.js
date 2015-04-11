@@ -198,28 +198,6 @@ var ifrdocument = document.getElementById(currentIfr).contentDocument;
                 }
             }
         }
-        //
-        //// These are the default actions (the XPath code might be a bit janky)
-        //// Really, these could do anything:
-        //var path = cssPath(e.target);
-        //console.log(path);
-        ////找到手机内页的iframe并清空现有导航
-        //var ifr = $('#ifr').contents();
-        //var nav = ifr.find(".mainmenu");
-        //nav.empty();
-        //$(document).find(path).find("a").each(function() {
-        //    console.log($(this).text());
-        //    var navUrl = $(this).attr("href");
-        //    var navName = $(this).text();
-        //    var toAppend = '<li><a href="' + navUrl + '"><em></em><p><span>' + navName + '</span></p><b></b></a></li>';
-        //    nav.append(toAppend);
-        //});
-        ////var navUrl = $("#navUrl").val();
-        ////var navName = $("#navName").val();
-        ////var toAppend = '<li><a href="' + navUrl + '"><em></em><p><span>' + navName + '</span></p><b></b></a></li>';
-        ////nav.append(toAppend);
-        ///* console.log( getXPath(e.target).join('/') ); */
-
         return false;
     }
 

@@ -72,7 +72,7 @@
 <div style="margin-top: 50px">
 {% block content %}{% endblock %}
 <div class="copyright">
-    Copyright © 2015-2020 <a href="http://www.vlongbiz.cn">威龙商务网</a> All rights reserved.
+    Copyright © 2015-2020 <a href="http://www.happylyang.com">happylyang转码</a> All rights reserved.
 </div>
 </div>
 <br>
@@ -370,76 +370,5 @@
     </nav>
 </div>
 <div id="plug-wrap" onclick="closeall()" style="display: none;"></div>
-
-<!-- share -->
-
-<script type="text/javascript">
-    window.shareData = {
-        "moduleName": "Index",
-        "moduleID": "0",
-        "imgUrl": "{{ STATIC_URL }}img/2.jpg",
-        "timeLineLink": "http://127.0.0.1/",
-        "sendFriendLink": "http://127.0.0.1/",
-        "weiboLink": "http://127.0.0.1/",
-        "tTitle": "科蚁网手机模板",
-        "tContent": "蚁团队致力于将科蚁网建立成为国内最专业的HTML5建站交流、学习、分享社区，打造HTML5建站生态圈，与HTML5建站爱好者共同成长进步。"
-    };
-</script>
-
-<script>
-    window.shareData.sendFriendLink = window.shareData.sendFriendLink.replace('http://127.0.0.1', 'http://127.0.0.1');
-    document.addEventListener('WeixinJSBridgeReady', function onBridgeReady() {
-        WeixinJSBridge.on('menu:share:appmessage', function(argv) {
-            shareHandle('friend');
-            WeixinJSBridge.invoke('sendAppMessage', {
-                "img_url": window.shareData.imgUrl,
-                "img_width": "640",
-                "img_height": "640",
-                "link": window.shareData.sendFriendLink,
-                "desc": window.shareData.tContent,
-                "title": window.shareData.tTitle
-            }, function(res) {
-                _report('send_msg', res.err_msg);
-            })
-        });
-
-        WeixinJSBridge.on('menu:share:timeline', function(argv) {
-            shareHandle('frineds');
-            WeixinJSBridge.invoke('shareTimeline', {
-                "img_url": window.shareData.imgUrl,
-                "img_width": "640",
-                "img_height": "640",
-                "link": window.shareData.sendFriendLink,
-                "desc": window.shareData.tContent,
-                "title": window.shareData.tTitle
-            }, function(res) {
-                _report('timeline', res.err_msg);
-            });
-        });
-
-        WeixinJSBridge.on('menu:share:weibo', function(argv) {
-            shareHandle('weibo');
-            WeixinJSBridge.invoke('shareWeibo', {
-                "content": window.shareData.tContent,
-                "url": window.shareData.sendFriendLink,
-            }, function(res) {
-                _report('weibo', res.err_msg);
-            });
-        });
-    }, false)
-
-    function shareHandle(to) {
-        var submitData = {
-            module: window.shareData.moduleName,
-            moduleid: window.shareData.moduleID,
-            token: 'xopcnh1413966457',
-            wecha_id: '',
-            url: window.shareData.sendFriendLink,
-            to: to
-        };
-        $.post('/', submitData, function(data) {
-        }, 'json')
-    }
-</script>
 </body>
 </html>

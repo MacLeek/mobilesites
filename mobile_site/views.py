@@ -77,7 +77,6 @@ def index(request):
         site_set = Site.objects.filter(domain_name=top_domain)
         c = {
             "SITE_URL": url,
-            "HOST_IP": settings.HOST_IP
         }
     if step == '0':
         sites = Site.objects.all()
@@ -111,7 +110,9 @@ def index(request):
         c.update(css_path=css_path)
         return render(request, 'third.html', c)
     elif step == '4':
-        return render(request, 'fourth.html', c)
+        response = render(request, 'fourth.html', c)
+        response.set_cookie('domain_name', top_domain)
+        return response
     return HttpResponse(status=404)
 
 
@@ -367,37 +368,6 @@ def mob_index(request):
             'imglist': imglist
         }
         return render(request, 'mob_index.html', c)
-##        r = requests.get(url)
-##        soup = BeautifulSoup(r.content, "lxml")
-##        nav_uls = soup.find_all("ul")
-##        nav_list = []
-##        a_exist = True
-##        for ul in nav_uls:
-##            if type(ul) != NavigableString:
-##                for li in ul.contents:
-##                    if type(li) != NavigableString and a_exist:
-##                        try:
-##                            text = li.a.get_text()
-##                            if not text:
-##                                text = li.get_text()
-##                            nav_list.append({'name': text, 'url': li.a.get('href')})
-##                        except:
-##                            nav_list = []
-##                            a_exist = False
-##                            break
-##                if a_exist:
-##                    break
-##                a_exist = True
-##        imglist = []
-##        taglist = []
-##        pointer = -1
-##        soup = soup.find("body")
-##        reverse(soup, imglist, taglist, pointer, url)
-##        c = {
-##            'nav': nav_list,
-##            'imglist': imglist
-##        }
-##        return render(request, 'mob_index.html', c)
     # 如果是二级页面
     else:
         c = {}
@@ -439,78 +409,6 @@ def getsizes(uri):
     return None
 
 
-def reverse(soup, imglist, taglist, pointer, base_url):
-    """
-    递归获取图片
-    :param soup:
-    :param imglist:
-    :param taglist:
-    :return:
-    """
-    if len(taglist) > pointer:
-        for child in soup.descendants:
-            name = getattr(child, "name", None)
-            if name and name == "img":
-                if pointer <= -1 or (len(taglist) > pointer > -1 and taglist[pointer] == name):
-                    # 首先把当前节点append
-                    url = child.get('src')
-                    if "http" not in url:
-                        url = "%s%s" % (base_url, url)
-                    img_size = getsizes(url)
-                    if img_size[0] > 300:
-                        if url in imglist:
-                            break
-                        imglist.append(url)
-                    else:
-                        continue
-                if len(taglist) > pointer > -1 and taglist[pointer] != name:
-                    if len(imglist) > 1:
-                        return
-                    taglist[:] = []
-                    imglist[:] = []
-                    pointer = -1
-                    continue
-                # 如果兄弟img存在，则append之并直接返回
-                for img in child.find_next_siblings("img"):
-                    imglist.append(img.get('src'))
-                else:
-                    # 兄弟img不存在，回溯父节点
-                    taglist[:] = []
-                    pointer = -1
-                    taglist.append(name)
-                    pointer += 1
-                    for tag in child.parents:
-                        # 如果到了body，说明这条路无效，重置
-                        if tag.name == "body":
-                            if len(imglist) > 1:
-                                return imglist
-                            imglist[:] = []
-                            taglist[:] = []
-                            pointer = -1
-                            break
-                        if not imglist:
-                            break
-                        taglist.append(tag.name)
-                        pointer += 1
-                        # 寻找当前节点的兄弟节点
-                        for child_tag in tag.find_next_siblings(tag.name):
-                            if child_tag:
-                                result = reverse(child_tag, imglist, taglist, pointer-1, base_url)
-                            if result == 0:
-                                break
-                        else:
-                            if len(imglist) > 1:
-                                return
-                # 找到了img
-                if imglist:
-                    return 1
-            elif name and len(taglist) > pointer > -1:
-                if taglist[pointer] != name:
-                    return 0
-                else:
-                    pointer -= 1
-
-
 def test(request):
     """
     访问桌面网站时使用此view
@@ -521,49 +419,49 @@ def test(request):
     host = request.META['HTTP_HOST']
     # 需传入点击时的element的文字内容
     title = request.GET.get('title', None)
-    domain_name = 'weifangsteel.com'
-    # domain_name = get_top_domain(host)
-    site_set = Site.objects.filter(domain_name=domain_name)
-    if site_set.exists():
-        s = site_set[0]
-        # 判断访问的是不是首页
-        is_index = False
-        if re.match(r'^\/($|(index|home))', url_path):
-            is_index = True
-        if is_index:
-            c = {
-                "title": title,
-                "nav": NavBlock.objects.filter(site__domain_name=domain_name, father_id=0),
-                'imglist': s.sliders.all()
-            }
-            return render(request, 'mob_index.html', c)
-        else:
-            # 如果是二级页面,则判断是否有二级导航
-            base_url = 'http://www.%s' % domain_name
-            second_set = NavBlock.objects.filter(url=url_path, site__id=s.id).exclude(father_id=0)
-            if second_set.exists():
-                second = second_set[0]
-                second_navs = NavBlock.objects.filter(father_id=second.father_id)
+    domain_name = request.COOKIES.get('domain_name', None)
+    if domain_name:
+        site_set = Site.objects.filter(domain_name=domain_name)
+        if site_set.exists():
+            s = site_set[0]
+            # 判断访问的是不是首页
+            is_index = False
+            if re.match(r'^\/($|(index|home))', url_path):
+                is_index = True
+            if is_index:
+                c = {
+                    "title": title,
+                    "nav": NavBlock.objects.filter(site__domain_name=domain_name, father_id=0),
+                    'imglist': s.sliders.all()
+                }
+                return render(request, 'mob_index.html', c)
             else:
-                second_navs = []
-            if second_navs and 6 > len(second_navs) > 3:
-                extra_navs = xrange(6 - len(second_navs))
-            else:
-                extra_navs = []
-            r = requests.get(base_url+url_path)
-            # 这里有用到soup是因为网页的编码问题,用了其他的监测编码的库似乎不太好用,暂时用bs的
-            soup = BeautifulSoup(r.content)
-            tree = lxml.html.fromstring(str(soup))
-            sel = CSSSelector(s.second.css_path)
-            res = sel(tree)
-            c = {
-                "title": title,
-                "second_navs": second_navs,
-                "extra_navs": extra_navs
-            }
-            if res:
-                html = lxml.html.tostring(res[0])
-                contents = purify(html, base_url)
-                c.update(contents=contents)
-            return render(request, 'mob_second.html', c)
+                # 如果是二级页面,则判断是否有二级导航
+                base_url = 'http://www.%s' % domain_name
+                second_set = NavBlock.objects.filter(url=url_path, site__id=s.id).exclude(father_id=0)
+                if second_set.exists():
+                    second = second_set[0]
+                    second_navs = NavBlock.objects.filter(father_id=second.father_id)
+                else:
+                    second_navs = []
+                if second_navs and 6 > len(second_navs) > 3:
+                    extra_navs = xrange(6 - len(second_navs))
+                else:
+                    extra_navs = []
+                r = requests.get(base_url+url_path)
+                # 这里有用到soup是因为网页的编码问题,用了其他的监测编码的库似乎不太好用,暂时用bs的
+                soup = BeautifulSoup(r.content)
+                tree = lxml.html.fromstring(str(soup))
+                sel = CSSSelector(s.second.css_path)
+                res = sel(tree)
+                c = {
+                    "title": title,
+                    "second_navs": second_navs,
+                    "extra_navs": extra_navs
+                }
+                if res:
+                    html = lxml.html.tostring(res[0])
+                    contents = purify(html, base_url)
+                    c.update(contents=contents)
+                return render(request, 'mob_second.html', c)
     return HttpResponse(status=404)

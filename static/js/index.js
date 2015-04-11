@@ -10,18 +10,6 @@
     $(document).ready(function() {
         $('#ifr').load(function() {
             $(".loadingBlock").hide();
-            //var ifr = $(this).contents();
-            //var nav = ifr.find(".mainmenu");
-            ////获取iframe中原先系统自动获取的nav，并复制到主页
-            //var originNavElems = nav.children().clone();
-            //var originNavs = Array();
-            //originNavElems.each(function() {
-            //    originNavs.push({
-            //        'name': $(this).text().replace(/\s/g, ''),
-            //        'url': $(this).find('a').attr('href'),
-            //        'id': $(this).attr('id')
-            //    });
-            //});
         });
         $("#add_first_nav").on("click", function() {
             var ifr = $('#ifr').contents();
@@ -200,17 +188,6 @@
                     'secondNavs': secondNavs
                 });
             });
-
-            //var ifr = $('#ifr').contents();
-            //var nav = ifr.find(".mainmenu");
-            //var originNavElems = nav.children().clone();
-
-            //originNavElems.each(function() {
-            //    originNavs.push({
-            //        'name': $(this).text().replace(/\s/g, ''),
-            //        'url': $(this).find('a')[0].pathname  //获取url的path部分
-            //    });
-            //});
             $.ajax({
                 method: "post",
                 url: "/save",
@@ -222,7 +199,11 @@
         });
         $("#addNewsite").on('click', function() {
             var newSiteurl = $("#newSiteurl").val();
-            window.location.href = "/index?step=1&url=" + newSiteurl;
+            if(newSiteurl) {
+                window.location.href = "/index?step=1&url=" + newSiteurl;
+            } else {
+                alert('请输入地址!');
+            }
         });
         $(".enableSite").each(function() {
             $(this).on('click', function() {

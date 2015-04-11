@@ -1,0 +1,11 @@
+Django==1.7.3
+MySQL-python
+requests
+django-getenv
+Pillow
+beautifulsoup4
+cssselect
+lxml
+html5lib
+bleach
+whitenoise

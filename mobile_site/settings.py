@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 from re import search
+from getenv import env
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -21,11 +23,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = ')^us5k6a#iz40atdvow!*-iy$**g^puomt+1f-y5c9rv-ua5z_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = DEBUG
 
-ALLOWED_HOSTS = ['119.176.60.6']
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
@@ -57,17 +59,29 @@ WSGI_APPLICATION = 'mobile_site.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mobilesites',
-        'USER': 'mobilesite',
-        'PASSWORD': 'mobilesite888',
-        'HOST': '127.0.0.1',
-        'PORT': '',
+VCAP_SERVICES = env('VCAP_SERVICES', None)
+if VCAP_SERVICES:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': VCAP_SERVICES['mysql'][0]['credentials']['name'],
+            'USER': VCAP_SERVICES['mysql'][0]['credentials']['username'],
+            'PASSWORD': VCAP_SERVICES['mysql'][0]['credentials']['password'],
+            'HOST': VCAP_SERVICES['mysql'][0]['credentials']['hostname'],
+            'PORT': '',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'mobilesites',
+            'USER': 'root',
+            'PASSWORD': '',
+            'HOST': '127.0.0.1',
+            'PORT': '3306',
+        }
+    }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
@@ -85,7 +99,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
-STATIC_ROOT = 'D:\\mobile_site\\static\\'
+STATIC_ROOT = 'staticfiles'
 STATIC_URL = '/static/'
 
 # Additional locations of static files
@@ -98,24 +112,3 @@ TEMPLATE_DIRS = (
 )
 
 LOGIN_URL = '/login'
-
-HOST_IP = 'http://119.176.60.6:8000'
-
-try:
-    import local_settings
-except ImportError:
-    pass
-else:
-    # Import any symbols that begin with A-Z. Append to lists any symbols that
-    # begin with "EXTRA_".
-    for attr in dir(local_settings):
-        match = search('^EXTRA_(\w+)', attr)
-        if match:
-            name = match.group(1)
-            value = getattr(local_settings, attr)
-            try:
-                globals()[name] += value
-            except KeyError:
-                globals()[name] = value
-        elif search('^[A-Z]', attr):
-            globals()[attr] = getattr(local_settings, attr)
