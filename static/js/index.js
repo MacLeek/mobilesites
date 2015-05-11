@@ -28,16 +28,21 @@
             var nav = ifr.find(".mainmenu");
             var navUrl = $("#navUrl").val();
             var navName = $("#navName").val();
-            var numOfNavs = nav.find('li').length;
-            var toAppend = '<li id="nav_1_'+numOfNavs+'"><a href="' + getLocation(navUrl) + '"><em></em><p><span>' + navName + '</span></p><b></b></a></li>';
-            nav.append(toAppend);
-            var navBlock = '<div class="form-inline"><div style="float: left;">一级</div><input type="text" class="form-control" value="' +
-                navName + '" name="navNameO"> ' +
-                '<input type="text" class="form-control" value="' + navUrl + '" name="navUrlO">' +
-                ' <button id="nav_1_' + numOfNavs + '" class="btn btn-warning btn-xs">确定修改</button>' +
-                    '<button id="add_second_nav" class="btn btn-warning btn-xs">增加</button>'+
-                '<button id="findSecondNav" navId="nav_1_' + numOfNavs + '" class="btn btn-warning btn-xs">提取</button></div>';
-            $("#existing_navs").append(navBlock);
+            if ( navUrl&&navName ) {
+                var numOfNavs = nav.find('li').length;
+                var toAppend = '<li id="nav_1_' + numOfNavs + '"><a href="' + getLocation(navUrl) + '"><em></em><p><span>' + navName + '</span></p><b></b></a></li>';
+                nav.append(toAppend);
+                var navBlock = '<div class="form-inline"><div id="nav_1_' + numOfNavs + '" style="float: left;">一级</div><input type="text" class="form-control" value="' +
+                    navName + '" name="navNameO"> ' +
+                    '<input type="text" class="form-control" value="' + navUrl + '" name="navUrlO">' +
+                    '<button id="add_second_nav" class="btn btn-warning btn-xs">增加</button>' +
+                    '<button id="findSecondNav" navId="nav_1_' + numOfNavs + '" class="btn btn-warning btn-xs">提取</button></div>';
+                $("#existing_navs").append(navBlock);
+                $("#navUrl").val('');
+                $("#navName").val('');
+            } else {
+                alert('请填写完整!');
+            }
         });
         $("#existing_navs").on("click", '#add_second_nav', function() {
             var toAppend = '<li><input type="text" class="form-control" value="" name="navName">' +
@@ -45,6 +50,45 @@
                 '<button id="del_current_second_nav" class="btn btn-warning btn-xs">删除</button></div>' +
                 '</li>';
             $(this).parent().append(toAppend);
+        });
+        $("#addSlider").on("click", function() {
+            var imgUrl = $("#imgUrl").val();
+            if (imgUrl) {
+                var toAppend = '<div class="form-inline"><input data-role="none" type="text" class="form-control" value="'+imgUrl+'" name="url"></div><br>';
+                $("#slider").append(toAppend);
+                $("#imgUrl").val('');
+            } else {
+                alert('请输入图片url');
+            }
+        });
+        $("#saveCss").on('click', function() {
+            var cssPath = $("#cssPath").val();
+            if (cssPath) {
+                $.ajax({
+                    method: "post",
+                    url: "/save",
+                    data: {'url': $("#siteUrl").val(), 'type': 'css', 'cssPath': cssPath}
+                })
+                    .done(function() {
+                        alert("保存成功");
+                    });
+            } else {
+                alert('请输入css路径!');
+            }
+        });
+        $("#saveSlider").on("click", function() {
+            var imgUrls = Array();
+            $("#slider").find('input').each(function() {
+                imgUrls.push($(this).val());
+            });
+            $.ajax({
+                method: "post",
+                url: "/save",
+                data: {'url': $("#siteUrl").val(), 'type': 'imgs', 'imgUrl': JSON.stringify(imgUrls)}
+            })
+                .done(function() {
+                    alert("保存成功");
+                });
         });
         //抓取一级导航
         $("#findNav").on("click", function() {
@@ -58,7 +102,7 @@
         //抓取一级图片slider
         $("#findSlider").on("click", function() {
             $("#currentIfr").val("ifrSlider");
-            var navModal = $('#navModal');
+            var navModal = $('#sliderModal');
             navModal.modal({
                 keyboard: false
             });
@@ -67,6 +111,7 @@
         //抓取二级导航
         $("#existing_navs").on("click", '#findSecondNav', function() {
             $("#currentIfr").val("ifrSecondNav");
+            $("#currentSecondNav").val($(this).attr('navid'));
             //将当前选中二级导航快的id传到隐藏input中
             var navModal = $('#navModal');
             navModal.modal({
@@ -85,14 +130,15 @@
             var secondUrl = $("#secondUrl").val();
             if (secondUrl) {
                 $('#ifrContent').empty();
-                $('#ifrContent').attr('src', "/page?url=" + secondUrl);
-                //$('#ifrContent').load(function() {
-                //    var ifrContent = $('#ifrContent').contents();
-                //    var tmp = ifrContent.find("head");
-                //    $('<script>')
-                //        .attr('src', "http://127.0.0.1:8000/static/js/inspector.js")
-                //        .appendTo(tmp);
-                //});
+                $("#ifrContent").attr('src', "/page?url=" + secondUrl);
+                $('#ifrContent').load(function() {
+                    var ifrContent = $('#ifrContent').contents();
+                    var tmp = ifrContent.find("head");
+                    $('<script>')
+                        .attr('src', $("#hostIp").val() + "/static/js/inspector.js")
+                        .appendTo(tmp);
+                });
+                //$('#ifr').attr('src', "/page?url=" + secondUrl);
                 var contentModal = $('#contentModal');
                 contentModal.modal({
                     keyboard: false
@@ -102,18 +148,21 @@
                 alert("请输入Url!");
             }
         });
-        $('#ifrContent').load(function() {
-            var ifrContent = $('#ifrContent').contents();
-            var tmp = ifrContent.find("head");
-            $('<script>')
-                .attr('src', "http://127.0.0.1:8000/static/js/inspector.js")
-                .appendTo(tmp);
+        $('#refreshContent').on('click', function(){
+            $("#ifr").attr('src', "/mobile?level=2&url=" + $("#secondUrl").val());
         });
         $('#ifrNav').load(function() {
             var ifrNav = $('#ifrNav').contents();
             var tmp = ifrNav.find("head");
             $('<script>')
-                .attr('src', "http://127.0.0.1:8000/static/js/inspector.js")
+                .attr('src', $("#hostIp").val()+"/static/js/inspector.js")
+                .appendTo(tmp);
+        });
+        $('#ifrSlider').load(function() {
+            var ifrNav = $('#ifrSlider').contents();
+            var tmp = ifrNav.find("head");
+            $('<script>')
+                .attr('src', $("#hostIp").val()+"/static/js/inspector.js")
                 .appendTo(tmp);
         });
         $("#emptyNav").on("click", function() {
@@ -171,11 +220,48 @@
                     alert("保存成功");
                 });
         });
-        $("#first").on("click", function() {
-            $('#ifr').attr('src', "/mobile?url=" + $("#siteUrl").val());
+        $("#addNewsite").on('click', function() {
+            var newSiteurl = $("#newSiteurl").val();
+            if(newSiteurl) {
+                window.location.href = "/index?step=1&url=" + newSiteurl;
+            } else {
+                alert('请输入地址!');
+            }
         });
-        $("#second").on("click", function() {
-            $('#ifr').attr('src', "/mobile?level=2&url=" + $("#siteUrl").val());
+        $(".enableSite").each(function() {
+            $(this).on('click', function() {
+                var id = $(this).attr('siteId');
+                var that = $(this);
+                $.ajax({
+                    method: "post",
+                    url: "/save",
+                    data: {'type': 'status', 'id': id}
+                })
+                    .done(function() {
+                        if(that.attr('data-title') == '启用'){
+                            that.attr('class', 'btn btn-success btn-xs');
+                            that.attr('data-title', '禁用');
+                            that.text('已启用');
+                        } else {
+                            that.attr('class', 'btn btn-warning btn-xs');
+                            that.attr('data-title', '启用');
+                            that.text('已禁用');
+                        }
+                    });
+            });
         });
+        $("#mytable #checkall").click(function() {
+            if ($("#mytable #checkall").is(':checked')) {
+                $("#mytable input[type=checkbox]").each(function() {
+                    $(this).prop("checked", true);
+                });
+
+            } else {
+                $("#mytable input[type=checkbox]").each(function() {
+                    $(this).prop("checked", false);
+                });
+            }
+        });
+        $("[data-toggle=tooltip]").tooltip();
     });
 })();

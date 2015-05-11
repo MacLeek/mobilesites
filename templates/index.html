@@ -1,400 +1,175 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>Starter Template for Bootstrap</title>
-
-    <!-- Bootstrap core CSS -->
-    <link href="http://cdn.bootcss.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link href="starter-template.css" rel="stylesheet">
-    <!-- Bootstrap core JavaScript
-================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="{{ STATIC_URL }}js/jquery-2.1.1.min.js"></script>
-    <script src="{{ STATIC_URL }}js/jquery.mobile-1.4.5.min.js"></script>
-
-    <script src="http://cdn.bootcss.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-
-
-    <script src="{{ STATIC_URL }}js/index.js"></script>
+{% extends "index_base.html" %}
+{% block own_css %}
     <style>
-        .loadingBlock {
-            width: 100%;
-            height: 100%;
-            position: fixed;
-            background: rgb(4, 4, 4);
-            opacity: 0.6;
-            z-index: 2;
-        }
-
-        #circularG {
-            position: fixed;
-            margin: 200px;
-            z-index: 3;
-            width: 128px;
-            height: 128px
-        }
-
-        .circularG {
-            position: absolute;
-            background-color: #199CC4;
-            width: 29px;
-            height: 29px;
-            -moz-border-radius: 19px;
-            -moz-animation-name: bounce_circularG;
-            -moz-animation-duration: 1.04s;
-            -moz-animation-iteration-count: infinite;
-            -moz-animation-direction: linear;
-            -webkit-border-radius: 19px;
-            -webkit-animation-name: bounce_circularG;
-            -webkit-animation-duration: 1.04s;
-            -webkit-animation-iteration-count: infinite;
-            -webkit-animation-direction: linear;
-            -ms-border-radius: 19px;
-            -ms-animation-name: bounce_circularG;
-            -ms-animation-duration: 1.04s;
-            -ms-animation-iteration-count: infinite;
-            -ms-animation-direction: linear;
-            -o-border-radius: 19px;
-            -o-animation-name: bounce_circularG;
-            -o-animation-duration: 1.04s;
-            -o-animation-iteration-count: infinite;
-            -o-animation-direction: linear;
-            border-radius: 19px;
-            animation-name: bounce_circularG;
-            animation-duration: 1.04s;
-            animation-iteration-count: infinite;
-            animation-direction: linear;
-        }
-
-        #circularG_1 {
-            left: 0;
-            top: 50px;
-            -moz-animation-delay: 0.39s;
-            -webkit-animation-delay: 0.39s;
-            -ms-animation-delay: 0.39s;
-            -o-animation-delay: 0.39s;
-            animation-delay: 0.39s;
-        }
-
-        #circularG_2 {
-            left: 14px;
-            top: 14px;
-            -moz-animation-delay: 0.52s;
-            -webkit-animation-delay: 0.52s;
-            -ms-animation-delay: 0.52s;
-            -o-animation-delay: 0.52s;
-            animation-delay: 0.52s;
-        }
-
-        #circularG_3 {
-            top: 0;
-            left: 50px;
-            -moz-animation-delay: 0.65s;
-            -webkit-animation-delay: 0.65s;
-            -ms-animation-delay: 0.65s;
-            -o-animation-delay: 0.65s;
-            animation-delay: 0.65s;
-        }
-
-        #circularG_4 {
-            right: 14px;
-            top: 14px;
-            -moz-animation-delay: 0.78s;
-            -webkit-animation-delay: 0.78s;
-            -ms-animation-delay: 0.78s;
-            -o-animation-delay: 0.78s;
-            animation-delay: 0.78s;
-        }
-
-        #circularG_5 {
-            right: 0;
-            top: 50px;
-            -moz-animation-delay: 0.91s;
-            -webkit-animation-delay: 0.91s;
-            -ms-animation-delay: 0.91s;
-            -o-animation-delay: 0.91s;
-            animation-delay: 0.91s;
-        }
-
-        #circularG_6 {
-            right: 14px;
-            bottom: 14px;
-            -moz-animation-delay: 1.04s;
-            -webkit-animation-delay: 1.04s;
-            -ms-animation-delay: 1.04s;
-            -o-animation-delay: 1.04s;
-            animation-delay: 1.04s;
-        }
-
-        #circularG_7 {
-            left: 50px;
-            bottom: 0;
-            -moz-animation-delay: 1.17s;
-            -webkit-animation-delay: 1.17s;
-            -ms-animation-delay: 1.17s;
-            -o-animation-delay: 1.17s;
-            animation-delay: 1.17s;
-        }
-
-        #circularG_8 {
-            left: 14px;
-            bottom: 14px;
-            -moz-animation-delay: 1.3s;
-            -webkit-animation-delay: 1.3s;
-            -ms-animation-delay: 1.3s;
-            -o-animation-delay: 1.3s;
-            animation-delay: 1.3s;
-        }
-
-        @-moz-keyframes bounce_circularG {
-            0% {
-                -moz-transform: scale(1)
-            }
-
-            100% {
-                -moz-transform: scale(.3)
-            }
-
-        }
-
-        @-webkit-keyframes bounce_circularG {
-            0% {
-                -webkit-transform: scale(1)
-            }
-
-            100% {
-                -webkit-transform: scale(.3)
-            }
-
-        }
-
-        @-ms-keyframes bounce_circularG {
-            0% {
-                -ms-transform: scale(1)
-            }
-
-            100% {
-                -ms-transform: scale(.3)
-            }
-
-        }
-
-        @-o-keyframes bounce_circularG {
-            0% {
-                -o-transform: scale(1)
-            }
-
-            100% {
-                -o-transform: scale(.3)
-            }
-
-        }
-
-        @keyframes bounce_circularG {
-            0% {
-                transform: scale(1)
-            }
-
-            100% {
-                transform: scale(.3)
-            }
-
-        }
-
     </style>
-    <style type="text/css">
-        body {
-            padding-top: 50px;
-        }
-
-        .starter-template {
-            padding: 40px 15px;
-            text-align: center;
-        }
-
-        #iphone_5_emulator {
-            background-image: url("{{ STATIC_URL }}img/iPhone_5_portrait.png");
-            width: 586px;
-            height: 1001px;
-            background-repeat: no-repeat;
-            background-position: top left;
-            margin: 0 auto 0 auto;
-            text-align: center;
-            float: right;
-        }
-
-        #frame_iphone_5_emulator {
-            width: 320px;
-            height: 568px;
-            margin: 217px 0 0 3px;
-        }
-
-        .frame_scroller {
-            display: inline-block;
-            -webkit-overflow-scrolling: touch;
-            overflow: hidden;
-        }
-
-        .frame_scroller > iframe {
-            width: 100%;
-            height: 100%;
-        }
-
-        iframe {
-            overflow-y: hidden;
-        }
-    </style>
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-      <script src="http://cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="http://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-</head>
-
-<body>
-<nav class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
-                    aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">桌面网站转手机网站</a>
-        </div>
-        <div id="navbar" class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
-                <li><a id="first" href="#">首页</a></li>
-                <li><a id="second" href="#second">二级页面</a></li>
-                <li><a href="#other">其他</a></li>
-            </ul>
-        </div>
-        <!--/.nav-collapse -->
-    </div>
-</nav>
-
-<div class="container">
-    {#    <div style="float: left;">#}
+{% endblock %}
+{% block content %}
     <br>
+    <div class="row">
 
-    <div class="loadingBlock">
-        <div id="circularG">
-            <div id="circularG_1" class="circularG">
+
+        <div class="col-md-12">
+            <h4>已添加网站</h4>
+
+            <div class="table-responsive">
+
+
+                <table id="mytable" class="table table-bordred table-striped">
+
+                    <thead>
+
+                    <th><input type="checkbox" id="checkall"/></th>
+                    <th>网站名称</th>
+                    <th>域名</th>
+                    <th>编辑</th>
+                    <th>预览</th>
+                    <th>禁用</th>
+                    <th>删除</th>
+                    </thead>
+                    <tbody>
+                    {% for site in sites %}
+                    <tr>
+                        <td><input type="checkbox" class="checkthis"/></td>
+                        <td>{{ site.name }}</td>
+                        <td>{{ site.domain_name }}</td>
+                        <td>
+                            <p data-placement="top" data-toggle="tooltip" title="编辑">
+                                <a href="/index?step=1&url=http://www.{{ site.domain_name }}" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-pencil"></span></a>
+                            </p>
+                        </td>
+                        <td>
+                            <p data-placement="top" data-toggle="tooltip" title="预览">
+                                <a href="/index?step=4&url=http://www.{{ site.domain_name }}" class="btn btn-info btn-xs"><span class="glyphicon glyphicon-eye-open"><a></a></span></a>
+                            </p>
+                        </td>
+                        <td>
+                        {% if site.is_active %}
+                            <p data-placement="top" data-toggle="tooltip" title="禁用">
+                                <button siteId="{{ site.id }}" class="enableSite btn btn-success btn-xs" data-title="禁用">已启用</button>
+                            </p>
+                        {% else %}
+                            <p data-placement="top" data-toggle="tooltip" title="启用">
+                                <button siteId="{{ site.id }}" class="enableSite btn btn-warning btn-xs" data-title="启用">已禁用</button>
+                            </p>
+                        {% endif %}
+                        </td>
+                        <td>
+                            <p data-placement="top" data-toggle="tooltip" title="删除">
+                                <button class="btn btn-danger btn-xs" data-title="删除" data-toggle="modal"
+                                        data-target="#delete"><span class="glyphicon glyphicon-trash"></span></button>
+                            </p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+
+                </table>
+
+                <div class="clearfix"></div>
+                <div class="pull-left form-inline">
+                    <input class="form-control" type="text" id="newSiteurl" name="newSiteurl">
+                    <button id="addNewsite" class="btn btn-primary">添加新网站</button>
+                </div>
+                <ul class="pagination pull-right">
+                    <li class="disabled"><a href="#"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
+                    <li class="active"><a href="#">1</a></li>
+                    <li><a href="#"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
+                </ul>
+
             </div>
-            <div id="circularG_2" class="circularG">
-            </div>
-            <div id="circularG_3" class="circularG">
-            </div>
-            <div id="circularG_4" class="circularG">
-            </div>
-            <div id="circularG_5" class="circularG">
-            </div>
-            <div id="circularG_6" class="circularG">
-            </div>
-            <div id="circularG_7" class="circularG">
-            </div>
-            <div id="circularG_8" class="circularG">
-            </div>
+
         </div>
     </div>
-    <div id="iphone_5_emulator">
-        <div id="frame_iphone_5_emulator" class="frame_scroller">
-            <iframe id="ifr" src="/mobile?url={{ SITE_URL }}" frameborder="0" style="background-color: #fff;">
-            </iframe>
-        </div>
     </div>
 
-    <div id="existing_navs">
-        {% for n, m in navs %}
-            <div class="form-inline">
-                <div id="nav_1_{{ forloop.counter0 }}" style="float: left;">一级</div>
-                <input data-role="none" type="text" class="form-control" value="{{ n }}" name="navNameO">
-                <input data-role="none" type="text" class="form-control" value="{{ m.0 }}" name="navUrlO">
-                <button id="add_second_nav" class="btn btn-warning btn-xs">增加</button>
-                <button id="findSecondNav" navId="nav_1_{{ forloop.counter0 }}" class="btn btn-warning btn-xs">提取
+
+    <div class="modal fade" id="edit" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span
+                            class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                    <h4 class="modal-title custom_align" id="Heading">Edit Your Detail</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input class="form-control " type="text" placeholder="Mohsin">
+                    </div>
+                    <div class="form-group">
+
+                        <input class="form-control " type="text" placeholder="Irshad">
+                    </div>
+                    <div class="form-group">
+                        <textarea rows="2" class="form-control"
+                                  placeholder="CB 106/107 Street # 11 Wah Cantt Islamabad Pakistan"></textarea>
+
+
+                    </div>
+                </div>
+                <div class="modal-footer ">
+                    <button type="button" class="btn btn-warning btn-lg" style="width: 100%;"><span
+                            class="glyphicon glyphicon-ok-sign"></span> Update
+                    </button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+
+
+
+    <div class="modal fade" id="enable" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span
+                        class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                <h4 class="modal-title custom_align" id="Heading">注意</h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="alert alert-danger"><span class="glyphicon glyphicon-warning-sign"></span>
+                    你确定要{% if site.is_active %}禁用{% else %}启用{% endif %}已选网站？
+                </div>
+
+            </div>
+            <div class="modal-footer ">
+                <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-ok-sign"></span> Yes
                 </button>
-                {% for s in m.1 %}
-                    <li>
-                        <input data-role="none" style="display: inline" type="text" value="{{ s.name }}"
-                               name="navNameO">
-                        <input data-role="none" style="display: inline" type="text" value="{{ s.url }}" name="navUrlO">
-                        <button id="del_current_second_nav" class="btn btn-warning btn-xs">删除</button>
-                    </li>
-                {% endfor %}
-            </div>
-        {% endfor %}
-    </div>
-    <br>
-    {#        </div>#}
-    <div class="form-inline">
-        <input type="text" class="form-control" value="" name="navName" id="navName" placeholder="请输入一级导航名称">
-        <input type="text" class="form-control" value="" name="navUrl" id="navUrl" placeholder="请输入一级导航url">
-        <button id="add_first_nav" class="btn btn-primary">添加</button>
-    </div>
-    <br>
-
-    <div class="form-inline">
-        <button id="findNav" class="btn btn-primary">提取一级导航</button>
-        <button id="emptyNav" class="btn btn-primary">清除全部导航</button>
-        <button id="saveNav" class="btn btn-primary">保存导航</button>
-    </div>
-    <br>
-
-    <div class="form-inline">
-        <button id="findLogo" class="btn btn-primary">提取logo</button>
-        <button id="findSlider" class="btn btn-primary">提取slider图片</button>
-        <button id="emptySlider" class="btn btn-primary">清除所有slider</button>
-    </div>
-    <br>
-
-    <div class="form-inline">
-        <input type="text" class="form-control" value="" name="secondUrl" id="secondUrl" placeholder="请输入二级页面url">
-        <button id="findContent" class="btn btn-primary">提取二级页面显示区</button>
-    </div>
-    <br>
-
-    <div class="form-inline">
-        <button id="submitAll" class="btn btn-info">提交所有修改</button>
-    </div>
-
-    <input type="hidden" id="currentIfr" value="ifrNav">
-    <input type="hidden" id="siteUrl" value="{{ SITE_URL }}">
-    <input type="hidden" id="currentSecondNav" value="0">
-
-    <div class="modal fade" id="navModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <iframe id="ifrNav" src="/page?url={{ SITE_URL }}" frameborder="0"
-                        onload="this.width=900;this.height=screen.height;"></iframe>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><span
+                        class="glyphicon glyphicon-remove"></span> No
+                </button>
             </div>
         </div>
+        <!-- /.modal-content -->
+    </div>
     </div>
 
-    <div class="modal fade" id="contentModal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <iframe id="ifrContent" src="" frameborder="0"
-                        onload="this.width=900;this.height=screen.height;"></iframe>
+    <div class="modal fade" id="delete" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><span
+                        class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                <h4 class="modal-title custom_align" id="Heading">注意</h4>
+            </div>
+            <div class="modal-body">
+
+                <div class="alert alert-danger"><span class="glyphicon glyphicon-warning-sign"></span>
+                    你确定要删除已选网站？
+                </div>
+
+            </div>
+            <div class="modal-footer ">
+                <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-ok-sign"></span> Yes
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><span
+                        class="glyphicon glyphicon-remove"></span> No
+                </button>
             </div>
         </div>
+        <!-- /.modal-content -->
     </div>
-
-</div>
-<!-- /.container -->
-</div>
-
-</body>
-</html>
+    </div>
+{% endblock %}

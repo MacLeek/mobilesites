@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import redis
-import threading
-
 from django.db import models
-from django.conf import settings
 
 __author__ = 'happylyang'
 

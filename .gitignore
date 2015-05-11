@@ -2,3 +2,4 @@
 .idea
 *.pyc
 temp
+*/local_settings.py
